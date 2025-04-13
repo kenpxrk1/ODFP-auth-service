@@ -46,7 +46,7 @@ public class AccountEntity {
     private boolean is_2fa_enabled;
 
     @Column(name = "is_blocked")
-    private boolean is_blocked;
+    private boolean isBlocked;
 
     @CreationTimestamp
     @Column(name = "created_at")

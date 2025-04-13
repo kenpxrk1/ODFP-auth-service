@@ -14,7 +14,7 @@ public interface AccountMapper {
     @Mapping(target = "passwordHash", expression = "java(passwordEncoder.encode(dto.getPassword()))")
     @Mapping(target = "role", constant = "USER")
     @Mapping(target = "_2fa_enabled", constant = "false")
-    @Mapping(target = "_blocked", constant = "false")
+    @Mapping(target = "blocked", constant = "false")
     @Mapping(target = "token", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
