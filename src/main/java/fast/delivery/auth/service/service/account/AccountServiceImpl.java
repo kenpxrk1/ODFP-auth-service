@@ -26,8 +26,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void save(AccountEntity account) {
-        accountRepository.save(account);
+    public AccountEntity save(AccountEntity account) {
+       return accountRepository.save(account);
     }
 
     @Transactional(readOnly = true)
