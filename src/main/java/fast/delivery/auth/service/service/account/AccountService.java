@@ -5,5 +5,5 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface AccountService extends UserDetailsService {
     boolean existsByPhoneNumber(String phoneNumber);
-    void save(AccountEntity account);
+    AccountEntity save(AccountEntity account);
 }

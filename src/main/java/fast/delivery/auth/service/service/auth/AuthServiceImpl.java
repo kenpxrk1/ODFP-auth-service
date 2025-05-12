@@ -5,6 +5,8 @@ import fast.delivery.auth.service.dto.request.RefreshTokenRequestDto;
 import fast.delivery.auth.service.dto.request.RegisterRequestDto;
 import fast.delivery.auth.service.dto.response.LoginResponseDto;
 import fast.delivery.auth.service.dto.response.RefreshTokenResponseDto;
+import fast.delivery.auth.service.dto.response.RegisteredUserEventDto;
+import fast.delivery.auth.service.event.KafkaUserProducer;
 import fast.delivery.auth.service.exception.EntityAlreadyExistsException;
 import fast.delivery.auth.service.mapper.AccountMapper;
 import fast.delivery.auth.service.mapper.TokenMapper;
@@ -27,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -35,6 +36,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
+    private final AccountMapper accountMapper;
     @Value("${jwt.expire-time-refresh-token}")
     private Long expireTime;
 
@@ -46,6 +48,7 @@ public class AuthServiceImpl implements AuthService {
     private final TokenMapper tokenMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authManager;
+    private final KafkaUserProducer kafkaUserProducer;
 
     @Transactional
     @Override
@@ -81,8 +84,10 @@ public class AuthServiceImpl implements AuthService {
             throw new EntityAlreadyExistsException(
                     "Account with phoneNumber " + registerDto.getPhoneNumber() + " already exists");
         }
-
-        accountService.save(mapper.toEntity(registerDto, passwordEncoder));
+        AccountEntity entity = accountService.save(mapper.toEntity(registerDto, passwordEncoder));
+        RegisteredUserEventDto eventDto = accountMapper.toUserEventDto(entity, registerDto);
+        kafkaUserProducer.sendUserCreated(eventDto);
+        log.info("user successfully created");
     }
 
 

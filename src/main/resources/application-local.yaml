@@ -10,6 +10,7 @@ spring:
     hikari:
       schema: auth-service-db
 
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -25,9 +26,29 @@ spring:
     default-schema: auth-service-db
     enabled: true
 
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+kafka:
+  producers:
+    registration:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      enable-idempotence: true
+      retries: 3
+      max-in-flight-requests-per-connection: 5
+      batch-size: 16384
+      linger-ms: 1
+      buffer-memory: 33554432
+
 jwt:
   secret-key: co7IB8BVZ2ZCWoyjnKbrX4ByykVOvY38vtv2DNK9kN4=
   expire-time-access-token: 900000
   expire-time-refresh-token: 3
 scheduling:
   fixed-rate: 900000
+
+topic:
+  user-registration: user-registration-topic
